@@ -1,0 +1,100 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.jpa.learning</groupId>
+	<artifactId>jpa-learning</artifactId>
+        <name>jpa-learning</name>
+	<version>0.0.1-SNAPSHOT</version>
+	<parent>
+		<groupId>org.fabricio.parent</groupId>
+		<artifactId>parent-pom</artifactId>
+		<version>1.0</version>
+	</parent>
+	<scm>
+		<connection>scm:svn:http://elendir.dyndns.org/usvn/svn/utilities/</connection>
+		<developerConnection>scm:svn:http://elendir.dyndns.org/usvn/svn/utilities/trunk/jpa-test/</developerConnection>
+		<url>http://elendir.dyndns.org/viewvc/trunk/jpa-test/</url>
+	</scm>
+	<ciManagement>
+		<system>Hudson</system>
+		<url>http://elendir.dyndns.org/hudson/</url>
+		<notifiers>
+			<notifier>
+				<type>mail</type>
+				<address>fabricio.tuosto@gmail.com</address>
+			</notifier>
+		</notifiers>
+	</ciManagement>
+
+	<distributionManagement>
+		<site>
+			<id>apache</id>
+			<url>scp://elendir.dyndns.org:443/var/www/docs/jpa-test/</url>
+		</site>
+	</distributionManagement>
+
+	<dependencies>
+		<!-- Utilities -->
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.4</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.collections</groupId>
+			<artifactId>google-collections</artifactId>
+			<version>0.9</version>
+		</dependency>
+		<!-- Guice -->
+		<dependency>
+			<groupId>com.google.code.guice</groupId>
+			<artifactId>guice</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>aopalliance</groupId>
+			<artifactId>aopalliance</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<!-- Logging -->
+		<dependency>
+			<groupId>org.log.utils</groupId>
+			<artifactId>log-utils</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.5.6</version>
+		</dependency>
+		<!-- Database Drivers -->
+		<dependency>
+			<groupId>hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+			<version>1.8.0.7</version>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.6</version>
+		</dependency>
+		<dependency>
+			<groupId>postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>8.3-603.jdbc4</version>
+		</dependency>
+		<!-- Hibernate + Lucene -->
+		<dependency>
+			<groupId>hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>3.4.0.GA</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-annotations</artifactId>
+			<version>3.4.0.GA</version>
+		</dependency>
+	</dependencies>
+</project>
+

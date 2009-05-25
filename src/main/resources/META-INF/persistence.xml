@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
+        http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"
+	version="1.0">
+	<persistence-unit name="test">
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		<!-- Para cuando ande o lo tire en un appserver
+		<jta-data-source>java:/dataSource</jta-data-source>
+		-->
+		<properties>
+			<!-- Hibernate Properties HSQLDB -->
+			<!-- 
+			<property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect" />
+			<property name="hibernate.hbm2ddl.auto" value="create-drop" />
+			<property name="hibernate.connection.driver_class" value="org.hsqldb.jdbcDriver" />
+			<property name="hibernate.connection.url" value="jdbc:hsqldb:mem:test" />
+			<property name="hibernate.connection.username" value="sa" />
+			<property name="hibernate.connection.password" value="" />
+ 			-->
+ 			<!-- Hibernate Properties MySQL -->
+ 			<!-- 
+			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect" />
+			<property name="hibernate.hbm2ddl.auto" value="create-drop" />
+			<property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver" />
+			<property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/prueba" />
+			<property name="hibernate.connection.username" value="root" />
+			<property name="hibernate.connection.password" value="elendir00" />
+			 -->
+			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
+			<property name="hibernate.hbm2ddl.auto" value="create-drop" />
+			<property name="hibernate.connection.driver_class" value="org.postgresql.Driver" />
+			<property name="hibernate.connection.url" value="jdbc:postgresql://192.168.1.100:5432/prueba" />
+			<property name="hibernate.connection.username" value="prueba" />
+			<property name="hibernate.connection.password" value="prueba00" />
+			<!-- Hibernate Search / Luecen proeprties configuration -->
+			<property name="hibernate.search.default.directory_provider" value="org.hibernate.search.store.FSDirectoryProvider"/>
+			<property name="hibernate.search.default.indexBase" value="/var/lucene/indexes"/>
+			 
+		</properties>
+	</persistence-unit>
+</persistence>
