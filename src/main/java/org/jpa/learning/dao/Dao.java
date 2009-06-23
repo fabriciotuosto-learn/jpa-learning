@@ -169,6 +169,19 @@ public class Dao {
 	 * @return
 	 */
 	@PerforamanceLog
+	public <E> E findUniqueByQuery(Query query, Map<String, Object> params) {
+		Validate.notNull(query);
+		return findByQuery(query, params, ResultStrategy.SINGLE);
+	}
+	
+	/**
+	 *
+	 * @param <E>
+	 * @param query
+	 * @param params
+	 * @return
+	 */
+	@PerforamanceLog
 	public <E> E findUniqueByQuery(String query, Map<String, Object> params) {
 		Validate.notNull(query);
 		return findByQuery(em.createQuery(query), params, ResultStrategy.SINGLE);
