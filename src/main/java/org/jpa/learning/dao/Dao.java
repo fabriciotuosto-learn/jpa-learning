@@ -8,8 +8,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.apache.commons.lang.Validate;
-import org.jpa.learning.PerforamanceLog;
-import org.jpa.learning.Tranactional;
+import org.jpa.learning.annotations.PerforamanceLog;
+import org.jpa.learning.annotations.Tranactional;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;

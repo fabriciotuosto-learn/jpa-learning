@@ -54,8 +54,6 @@ public class JpaMain
 			Map<String, Object> params = Maps.newHashMap();
 			params.put("id", 1L);
 			System.out.println(dao.findUniqueByQuery("select libro from Libro libro where libro.id = :id",params));
-			// Finding with variable arguments
-			System.out.println(dao.findByQuery(ResultStrategy.SINGLE,"select libro from Libro libro where libro.titulo = ?","La Conciencia de Zeno"));
 			// Finding with query created by JpaQueryBuilder
 			Query query = dao.getQueryBuilder(Libro.class)
 							  .equals("titulo", "La Conciencia de Zeno")
