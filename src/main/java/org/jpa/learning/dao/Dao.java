@@ -1,6 +1,5 @@
 package org.jpa.learning.dao;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -8,76 +7,88 @@ import java.util.Map.Entry;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.Validate;
-import org.jpa.learning.annotations.PerforamanceLog;
-import org.jpa.learning.annotations.Tranactional;
+import org.jpa.learning.PerforamanceLog;
+import org.jpa.learning.Tranactional;
 
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 
 /**
- *
+ * 
  * @author fabricio
- *
+ * 
+ * {@link Dao} provides methods to interact easily with entity manager
+ * if this class was not provided by {@link Injector} then transaction
+ * and performance logging is in hands of the client class if you use it
+ * with Guice we provide a module that configures this class and
+ * {@link EntityManager} creation This class should be used and disposed
+ * it intends to be ideally in thread local scope, this class is not
+ * thread safe and is not intend to be, because {@link EntityManager}
+ * that is the sole dependency are very cheap to create so is this class
  */
 public class Dao {
-	/**
-	 *
-	 */
-	private static final Map<String, Object> EMPTY_PARAMS = Collections.emptyMap();
 
 	/**
-	 *
+	 * The entity manager that provides orm object
 	 */
 	private final EntityManager em;
 
 	/**
-	 *
+	 * 
 	 * @param em
+	 *            the entity manager that will be consulted
+	 * @throws IllegalArgumentException
+	 *             when @param em is null
 	 */
 	@Inject
 	public Dao(EntityManager em) {
+		Validate.notNull(em, "Entity manger must not be null");
 		this.em = em;
 	}
 
 	/**
-	 *
-	 * @return
+	 * 
+         * @param klass
+         * @return an instantiate {@link JpaQueryBuilder}
 	 */
 	public JpaQueryBuilder getQueryBuilder(Class<?> klass) {
-		return new JpaQueryBuilder(em,klass);
+		return new JpaQueryBuilder(em, klass);
 	}
 
 	/**
-	 *
+	 * Removes the element from the associated {@link EntityManager}
+	 * 
 	 * @param <E>
 	 * @param elements
 	 * @return
 	 */
-	@Tranactional @PerforamanceLog
+	@Tranactional
+	@PerforamanceLog
 	public <E> E remove(E elements) {
 		em.remove(elements);
 		return elements;
 	}
 
 	/**
-	 *
+	 * Removes all the <E> elements from the associated {@link EntityManager}
+	 * 
 	 * @param <E>
 	 * @param clazz
 	 * @return
 	 */
-	@Tranactional @PerforamanceLog
+	@Tranactional
+	@PerforamanceLog
 	public <E> List<E> removeAll(Class<E> clazz) {
 		List<E> elist = findAllByClass(clazz);
-		for(E e : elist)
-		{
+		for (E e : elist) {
 			remove(e);
 		}
 		return elist;
 	}
 
 	/**
-	 *
+	 * 
 	 * @param <E>
 	 * @param <F>
 	 * @param clazz
@@ -93,24 +104,26 @@ public class Dao {
 	}
 
 	/**
-	 *
+	 * 
 	 * @param <E>
 	 * @param e
 	 * @return
 	 */
-	@Tranactional @PerforamanceLog
+	@Tranactional
+	@PerforamanceLog
 	public <E> E persist(E e) {
 		em.persist(e);
 		return e;
 	}
 
 	/**
-	 *
+	 * 
 	 * @param <E>
 	 * @param e
 	 * @return
 	 */
-	@Tranactional @PerforamanceLog
+	@Tranactional
+	@PerforamanceLog
 	public <E> E persistNow(E e) {
 		persist(e);
 		em.flush();
@@ -118,19 +131,34 @@ public class Dao {
 	}
 
 	/**
-	 *
+	 * 
 	 * @param <E>
 	 * @param e
 	 * @return
 	 */
-	@Tranactional @PerforamanceLog
+	@Tranactional
+	@PerforamanceLog
 	public <E> E merge(E e) {
 		em.merge(e);
 		return e;
 	}
 
 	/**
-	 *
+	 * 
+	 * @param <E>
+	 * @param e
+	 * @return
+	 */
+	@Tranactional
+	@PerforamanceLog
+	public <E> E mergeNow(E e) {
+		merge(e);
+		em.flush();
+		return e;
+	}
+
+	/**
+	 * 
 	 * @return
 	 */
 	public EntityManager getEntityManager() {
@@ -138,7 +166,7 @@ public class Dao {
 	}
 
 	/**
-	 *
+	 * 
 	 * @param <E>
 	 * @param <P>
 	 * @param clazz
@@ -151,31 +179,19 @@ public class Dao {
 	}
 
 	/**
-	 *
+	 * 
 	 * @param <E>
 	 * @param clazz
 	 * @return
 	 */
 	@PerforamanceLog
 	public <E> List<E> findAllByClass(Class<E> clazz) {
-		return findByQuery(String.format("select obj from %s obj", clazz.getCanonicalName()), EMPTY_PARAMS);
+		return findByQuery(String.format("select obj from %s obj", clazz
+				.getCanonicalName()), null);
 	}
 
 	/**
-	 *
-	 * @param <E>
-	 * @param query
-	 * @param params
-	 * @return
-	 */
-	@PerforamanceLog
-	public <E> E findUniqueByQuery(Query query, Map<String, Object> params) {
-		Validate.notNull(query);
-		return findByQuery(query, params, ResultStrategy.SINGLE);
-	}
-	
-	/**
-	 *
+	 * 
 	 * @param <E>
 	 * @param query
 	 * @param params
@@ -184,11 +200,57 @@ public class Dao {
 	@PerforamanceLog
 	public <E> E findUniqueByQuery(String query, Map<String, Object> params) {
 		Validate.notNull(query);
-		return findByQuery(em.createQuery(query), params, ResultStrategy.SINGLE);
+		// workaround for bug in javac compiler
+		// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6302954
+		return this.<E>findByQuery(em.createQuery(query), params, ResultStrategy.SINGLE);
+	}
+	
+	/**
+	 * 
+	 * @param <E>
+	 * @param query
+	 * @param params
+	 * @return
+	 */
+	@PerforamanceLog
+	public <E> E findUniqueByQuery(Query query, Map<String, Object> params) {
+		Validate.notNull(query);
+		// workaround for bug in javac compiler
+		// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6302954
+		return this.<E>findByQuery(query, params, ResultStrategy.SINGLE);
+	}
+	
+	/**
+	 * 
+	 * @param <E>
+	 * @param query
+	 * @param params
+	 * @return
+	 */
+	@PerforamanceLog
+	public <E> E findUniqueByNamedQuery(String query, Map<String, Object> params) {
+		Validate.notNull(query);
+		// workaround for bug in javac compiler
+		// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6302954
+		return this.<E> findByQuery(em.createNamedQuery(query), params,
+				ResultStrategy.SINGLE);
 	}
 
+   
 	/**
-	 *
+	 * 
+	 * @param <E>
+	 * @param query
+	 * @param params
+	 * @return
+	 */
+	@PerforamanceLog
+	public <E> List<E> findByNamedQuery(String query, Map<String, Object> params) {
+		Validate.notNull(query);
+		return findByQuery(em.createNamedQuery(query), params);
+	}
+	/**
+	 * 
 	 * @param <E>
 	 * @param query
 	 * @param params
@@ -201,7 +263,7 @@ public class Dao {
 	}
 
 	/**
-	 *
+	 * 
 	 * @param <E>
 	 * @param query
 	 * @param params
@@ -213,7 +275,7 @@ public class Dao {
 	}
 
 	/**
-	 *
+	 * 
 	 * @param <E>
 	 * @param query
 	 * @return
@@ -224,7 +286,7 @@ public class Dao {
 	}
 
 	/**
-	 *
+	 * 
 	 * @param <E>
 	 * @param query
 	 * @param strategy
@@ -232,11 +294,14 @@ public class Dao {
 	 */
 	@PerforamanceLog
 	public <E> E findByQuery(Query query, ResultStrategy strategy) {
-		return strategy.getResult(query);
+		// workaround for bug in javac compiler
+		// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6302954
+		E result = strategy.<E> getResult(query);
+		return result;
 	}
 
 	/**
-	 *
+	 * 
 	 * @param <E>
 	 * @param query
 	 * @param params
@@ -256,46 +321,13 @@ public class Dao {
 			}
 		}
 		// return a list or objects according to the strategy
-		return strategy.getResult(query);
+		// workaround for bug in javac compiler
+		// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6302954
+		return strategy.<E> getResult(query);
 	}
 
 	/**
-	 *
-	 * @param <E>
-	 * @param strategy
-	 * @param query
-	 * @param params
-	 * @return
-	 */
-	@PerforamanceLog
-	public <E> E findByQuery(ResultStrategy strategy, String query,
-			Object... params) {
-		return findByQuery(strategy, em.createQuery(query), params);
-	}
-
-	/**
-	 *
-	 */
-	@PerforamanceLog
-	public <E> E findByQuery(ResultStrategy strategy, Query query,
-			Object... params) {
-		// Validate arguments
-		Validate.notNull(query);
-		Validate.notNull(strategy);
-		// Set parameters if they were passed
-		if (!ArrayUtils.isEmpty(params)) {
-			int index = 1;
-			for (Object param : params) {
-				query.setParameter(index++, param);
-			}
-		}
-		// return a list or objects according to the strategy
-		return strategy.getResult(query);
-	}
-
-
-	/**
-	 *
+	 * Close any open resource
 	 */
 	public void close() {
 		// Close if it's not null and it is open
@@ -305,9 +337,9 @@ public class Dao {
 	}
 
 	/**
-	 *
-	 * @author fabricio
-	 *
+	 * 
+	 * @author fabricio This enum facilities picking the kind of result the user
+	 *         wants from making a query to the {@link EntityManager}
 	 */
 	public static enum ResultStrategy {
 		SINGLE {
@@ -326,18 +358,21 @@ public class Dao {
 		};
 
 		/**
-		 *
+		 * 
 		 * @param <T>
 		 * @param query
 		 * @return
 		 */
 		public <T> T getResult(Query query) {
 			Validate.notNull(query, "El query no puede ser <null>");
-			return performQuery(query);
+			// workaround for bug in javac compiler
+			// http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6302954
+			return this.<T> performQuery(query);
 		}
 
 		/**
-		 *
+		 * Extension point to the enums to provide the different strategy
+		 * 
 		 * @param <T>
 		 * @param query
 		 * @return
@@ -345,4 +380,3 @@ public class Dao {
 		protected abstract <T> T performQuery(Query query);
 	}
 }
-
