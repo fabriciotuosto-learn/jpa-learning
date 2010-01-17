@@ -1,7 +1,0 @@
-.settings
-.project
-.classpath
-*.log
-target
-bin
-*~
